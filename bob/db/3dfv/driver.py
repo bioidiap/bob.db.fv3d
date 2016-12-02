@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 
-"""Bob Database Driver entry-point for the VERA Fingervein database
+"""Bob Database Driver entry-point for the 3D Fingervein database
 """
 
 import os
@@ -68,7 +68,7 @@ def checkfiles(args):
 class Interface(BaseInterface):
 
   def name(self):
-    return 'verafinger'
+    return '3dfv'
 
   def version(self):
     import pkg_resources  # part of setuptools
@@ -88,7 +88,7 @@ class Interface(BaseInterface):
     from . import __doc__ as docs
 
     subparsers = self.setup_parser(parser,
-        "VERA Fingervein database", docs)
+        "3D Fingervein database", docs)
 
     # example: get the "create" action from a submodule
     from .create import add_command as create_command
