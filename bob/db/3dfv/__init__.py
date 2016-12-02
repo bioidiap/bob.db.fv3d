@@ -5,7 +5,7 @@
 """
 
 from .query import Database
-from .models import Client, Finger, File, Protocol, Subset
+from .models import Client, Finger, File, Protocol, Model, Probe
 
 
 def get_config():

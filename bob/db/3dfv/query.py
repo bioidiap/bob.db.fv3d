@@ -33,13 +33,13 @@ class Database(bob.db.base.SQLiteDatabase):
   def purposes(self):
     """Returns a list of all supported purposes"""
 
-    return Subset.purpose_choices
+    return ('train', 'enroll', 'probe')
 
 
   def groups(self):
     """Returns a list of all supported groups"""
 
-    return Subset.group_choices
+    return Model.group_choices
 
 
   def genders(self):

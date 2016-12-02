@@ -202,7 +202,7 @@ class File(Base, bob.db.base.File):
   session_choices = ('1', '2', '3')
   session = Column(Enum(*session_choices))
 
-  attempt = ('1', '2')
+  attempt_choices = ('1', '2')
   attempt = Column(Enum(*attempt_choices))
 
   snapshot_choices = ('1', '2', '3', '4', '5')
@@ -311,7 +311,7 @@ class Model(Base):
 
   # The finger it models
   finger_id = Column(Integer, ForeignKey('finger.id'))
-  finger = relationship("Finger", backref=backref("files", order_by=id))
+  finger = relationship("Finger", backref=backref("models", order_by=id))
 
   # Which files to use for the said finger. All files should belong to the same
   # finger

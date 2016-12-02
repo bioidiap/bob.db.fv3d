@@ -7,9 +7,11 @@
 import os
 import re
 import csv
+import gzip
 import pkg_resources
 
 from .models import *
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def add_clients(session, verbose):
@@ -35,7 +37,7 @@ def add_clients(session, verbose):
         print("Created %s" % client)
 
 
-FILENAME_RE = re.compile(r'^(?P<id>\d{3})\-(?P<age>\d{3})\-(?P<gender>[fm])(?P<skin>[1-6x])(?P<occ>[0-9x])(?P<side>[lr])(?P<finger>[timlr])(?P<session>[1-3])(?P<attempt>[1-5])(?P<snap>[1-5])(?P<cam>[1-3])\.png$')
+FILENAME_RE = re.compile(r'^(?P<id>\d{3})\-(?P<age>\d{3})\-(?P<gender>[fm])(?P<skin>[1-6x])(?P<occ>[0-9x])(?P<side>[lr])(?P<finger>[timlr])(?P<session>[1-3])(?P<attempt>[1-5])(?P<snap>[1-5])(?P<cam>[1-3])$')
 
 def try_get_metadata(path):
   '''Returns the metadata from a path or ``None`` if no match occurs'''
@@ -60,38 +62,29 @@ def try_get_metadata(path):
 
 
 
-def add_files(basedir, db_session, verbose):
+def add_files(db_session, verbose):
   """Create file entries at the database"""
 
 
   dir_re = re.compile(r'^(?P<id>\d{3})$')
 
-  counter = 0
-
-  for path, dirs, files in os.walk(basedir):
-
-    for f in files:
-      info = try_get_metadata(f)
-      src_filename = os.path.join(path, f)
-
-      if info is None:
-        print("Skipping file `%s' (no match)" % src_filename)
-        continue
-
-      else: #get a match, copy with new name
-        counter += 1
+  fname = pkg_resources.resource_filename(__name__, os.path.join('data',
+    'files.txt.gz'))
+  with gzip.open(fname, 'rb') as flist:
+    for f in flist:
+      info = try_get_metadata(f.strip().decode())
 
       # checks if the finger with the specifications is there/unique
       try:
         finger = db_session.query(Finger).join(Client).filter(
-          Client.id=info['id'],
-          Finger.side=info['side'],
-          Finger.name=info['name'],
+          Client.id==info['id'],
+          Finger.side==info['side'],
+          Finger.name==info['finger'],
           ).one()
-      except RuntimeError as e:
+      except NoResultFound as e:
         # creates the missing finger
-        client = db_session.query(Client).filter(Client.id=info['id'])
-        finger = Finger(client, info['side'], info['name'])
+        client = db_session.query(Client).filter(Client.id==info['id']).one()
+        finger = Finger(client, info['side'], info['finger'])
         db_session.add(finger)
         if verbose:
           print("Created %s" % finger)
@@ -110,13 +103,13 @@ def retrieve_file(session, ref):
 
   info = try_get_metadata(ref)
   return session.query(File).join(Finger,Client).filter(
-      Client.id=info['id'],
-      Finger.name=info['finger'],
-      Finger.side=info['side'],
-      File.session=info['session'],
-      File.attempt=info['attempt'],
-      File.snapshot=info['snap'],
-      File.camera=info['cam'],
+      Client.id==info['id'],
+      Finger.name==info['finger'],
+      Finger.side==info['side'],
+      File.session==info['session'],
+      File.attempt==info['attempt'],
+      File.snapshot==info['snap'],
+      File.camera==info['cam'],
       ).one()
 
 
@@ -132,28 +125,23 @@ def add_protocols(session, verbose):
       print("Created %s" % protocol)
 
     # training data
-    train_filename = os.path.join(protocol_dir, name, 'train.txt')
-    with open(train_filename, 'rt') as f:
-      for row in f:
-        filename_ref, finger_ref = row.split()
-        file_ = retrieve_file(session, filename_ref)
+    train_filename = os.path.join(protocol_dir, name, 'train.txt.gz')
+    with gzip.open(train_filename, 'rb') as f:
+      for filename in f:
+        file_ = retrieve_file(session, filename.strip().decode())
         protocol.training_set.append(file_)
         if verbose:
-          print("Added %s to %s" % (file_, subset))
+          print("Added %s to %s" % (file_, protocol))
 
     # enrollment data
-    models_filename = os.path.join(protocol_dir, name, 'dev-models.txt')
-    subset = Subset(protocol, 'dev', 'enroll')
-    session.add(subset)
-    if verbose:
-      print("Created %s" % subset)
-    with open(models_filename, 'rt') as f:
+    models_filename = os.path.join(protocol_dir, name, 'dev-models.txt.gz')
+    with gzip.open(models_filename, 'rb') as f:
       for row in f:
-        filename_ref, model_ref = row.split()
-        file_ = retrieve_file(session, filename_ref)
-        model = session.query(Model).filter(Model.name=model_ref)
+        filename, model_ref = row.split()
+        file_ = retrieve_file(session, filename.decode())
+        model = session.query(Model).filter(Model.name==model_ref.decode())
         if model.count() == 0:
-          model = Model(model_ref, 'dev', file_.finger, protocol)
+          model = Model(model_ref.decode(), 'dev', file_.finger, protocol)
           if verbose:
             print("Created model %s" % (model,))
         model.files.append(file_)
@@ -161,11 +149,10 @@ def add_protocols(session, verbose):
           print("Added %s to %s" % (file_, model))
 
     # probing data
-    probes_filename = os.path.join(protocol_dir, name, 'dev-probes.txt')
-    with open(probes_filename, 'rt') as f:
-      for row in f:
-        filename_ref, model_ref = row.split()
-        file_ = retrieve_file(session, filename_ref)
+    probes_filename = os.path.join(protocol_dir, name, 'dev-probes.txt.gz')
+    with gzip.open(probes_filename, 'rb') as f:
+      for filename in f:
+        file_ = retrieve_file(session, filename.decode())
         probe = Probe('dev', protocol, file_)
         session.add(probe)
         if verbose:
@@ -202,7 +189,6 @@ def create(args):
   echo = args.verbose > 2 if args.verbose else False
   s = session_try_nolock(args.type, args.files[0], echo=echo)
   add_clients(s, args.verbose)
-  add_fingers(s, args.verbose)
   add_files(s, args.verbose)
   add_protocols(s, args.verbose)
   s.commit()
