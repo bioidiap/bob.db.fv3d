@@ -260,7 +260,7 @@ class File(Base, bob.db.base.File):
 
     """
 
-    return bob.io.base.load(self.make_path(directory, '.png'))
+    return bob.io.base.load(self.make_path(directory, extension))
 
 
 train_file_association = Table('train_file_association', Base.metadata,
