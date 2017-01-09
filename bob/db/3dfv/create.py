@@ -7,7 +7,6 @@
 import os
 import re
 import csv
-import gzip
 import pkg_resources
 
 from .models import *
@@ -69,8 +68,8 @@ def add_files(db_session, verbose):
   dir_re = re.compile(r'^(?P<id>\d{3})$')
 
   fname = pkg_resources.resource_filename(__name__, os.path.join('data',
-    'files.txt.gz'))
-  with gzip.open(fname, 'rb') as flist:
+    'files.txt'))
+  with open(fname, 'rb') as flist:
     for f in flist:
       info = try_get_metadata(f.strip().decode())
 
@@ -125,8 +124,8 @@ def add_protocols(session, verbose):
       print("Created %s" % protocol)
 
     # training data
-    train_filename = os.path.join(protocol_dir, name, 'train.txt.gz')
-    with gzip.open(train_filename, 'rb') as f:
+    train_filename = os.path.join(protocol_dir, name, 'train.txt')
+    with open(train_filename, 'rb') as f:
       for filename in f:
         file_ = retrieve_file(session, filename.strip().decode())
         protocol.training_set.append(file_)
@@ -134,8 +133,8 @@ def add_protocols(session, verbose):
           print("Added %s to %s" % (file_, protocol))
 
     # enrollment data
-    models_filename = os.path.join(protocol_dir, name, 'dev-models.txt.gz')
-    with gzip.open(models_filename, 'rb') as f:
+    models_filename = os.path.join(protocol_dir, name, 'dev-models.txt')
+    with open(models_filename, 'rb') as f:
       for row in f:
         filename, model_ref = row.split()
         file_ = retrieve_file(session, filename.decode())
@@ -149,8 +148,8 @@ def add_protocols(session, verbose):
           print("Added %s to %s" % (file_, model))
 
     # probing data
-    probes_filename = os.path.join(protocol_dir, name, 'dev-probes.txt.gz')
-    with gzip.open(probes_filename, 'rb') as f:
+    probes_filename = os.path.join(protocol_dir, name, 'dev-probes.txt')
+    with open(probes_filename, 'rb') as f:
       for filename in f:
         file_ = retrieve_file(session, filename.decode())
         probe = Probe('dev', protocol, file_)

@@ -6,6 +6,7 @@
 
 import os
 import sys
+import pkg_resources
 from bob.db.base.driver import Interface as BaseInterface
 
 
@@ -67,21 +68,26 @@ def checkfiles(args):
 
 class Interface(BaseInterface):
 
+
   def name(self):
     return '3dfv'
+
 
   def version(self):
     import pkg_resources  # part of setuptools
     return pkg_resources.require('bob.db.%s' % self.name())[0].version
 
-  def files(self):
 
-    from pkg_resources import resource_filename
-    raw_files = ('db.sql3',)
-    return [resource_filename(__name__, k) for k in raw_files]
+  def files(self):
+    basedir = pkg_resources.resource_filename(__name__, '')
+    filelist = os.path.join(basedir, 'files.txt')
+    return [os.path.join(basedir, k.strip()) for k in \
+        open(filelist, 'rt').readlines() if k.strip()]
+
 
   def type(self):
     return 'sqlite'
+
 
   def add_commands(self, parser):
 
