@@ -54,10 +54,10 @@ def try_get_metadata(path):
       'occ': m.group('occ'),
       'side': m.group('side'),
       'finger': m.group('finger'),
-      'session': int(m.group('session')),
-      'attempt': int(m.group('attempt')),
-      'snap': int(m.group('snap')),
-      'cam': int(m.group('cam')),
+      'session': str(int(m.group('session'))),
+      'attempt': str(int(m.group('attempt'))),
+      'snap': str(int(m.group('snap'))),
+      'cam': str(int(m.group('cam'))),
       }
 
 
