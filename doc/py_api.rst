@@ -5,5 +5,5 @@
  Python API
 ============
 
-.. automodule:: bob.db.3dfv
+.. automodule:: bob.db.fv3d
 

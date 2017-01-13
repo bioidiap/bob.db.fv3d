@@ -174,7 +174,7 @@ class File(Base, bob.db.base.File):
 
   Filenames inside the 3D Fingervein are like these:
 
-  <session>/<attempt>/<client>-<age>-<gender><skin><occ><side><finger><session><attempt><snap><cam>>png
+  <client>/<session>/<attempt>/<client>-<age>-<gender><skin><occ><side><finger><session><attempt><snap><cam>.png
 
   The fields can have these values:
 
@@ -322,6 +322,8 @@ class Model(Base):
   # To which protocol is this model associated to?
   protocol_id = Column(Integer, ForeignKey('protocol.id'))
   protocol = relationship("Protocol", backref=backref("models", order_by=id))
+
+  UniqueConstraint('name', 'protocol', name='name_protocol')
 
 
   def __init__(self, name, group, finger, protocol):

@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 
-"""A few checks at the VERA Fingervein database.
+"""A few checks at the 3D Fingervein database.
 """
 
 import os
 import numpy
 
-from . import Database
+from .query import Database
 
 import nose.tools
 from nose.plugins.skip import SkipTest
 
-# base directories where the VERA files sit
-DATABASE_PATH = "/idiap/project/vera/databases/VERA-fingervein"
 
-
-def sql3_available(test):
-  """Decorator for detecting if the sql3 file is available"""
+def metadata_available(test):
+  """Decorator for detecting if the metadata is available"""
 
   from bob.io.base.test_utils import datafile
   from nose.plugins.skip import SkipTest
@@ -29,7 +26,7 @@ def sql3_available(test):
     if os.path.exists(dbfile):
       return test(*args, **kwargs)
     else:
-      raise SkipTest("The interface SQL file (%s) is not available; did you forget to run 'bob_dbmanage.py %s create' ?" % (dbfile, 'vera'))
+      raise SkipTest("The interface SQL file (%s) is not available; did you forget to run 'bob_dbmanage.py %s create' ?" % (dbfile, 'fv3d'))
 
   return wrapper
 
@@ -51,24 +48,38 @@ def db_available(test):
   return wrapper
 
 
-@sql3_available
+@metadata_available
+def test_recreate():
+
+  from bob.db.base.script.dbmanage import main
+  nose.tools.eq_(main('fv3d create --recreate'.split()), None)
+
+
+@metadata_available
 def test_counts():
 
   # test whether the correct number of clients is returned
   db = Database()
 
-  nose.tools.eq_(db.groups(), ('train', 'dev'))
+  nose.tools.eq_(db.groups(), ('train', 'dev', 'eval'))
 
   protocols = db.protocol_names()
-  nose.tools.eq_(len(protocols), 4)
-  assert 'Nom' in protocols
-  assert 'Full' in protocols
-  assert 'Fifty' in protocols
-  assert 'B' in protocols
+  nose.tools.eq_(len(protocols), 1)
+  assert 'central' in protocols
 
   nose.tools.eq_(db.purposes(), ('train', 'enroll', 'probe'))
-  nose.tools.eq_(db.genders(), ('M', 'F'))
-  nose.tools.eq_(db.sides(), ('L', 'R'))
+  nose.tools.eq_(db.genders(), ('m', 'f'))
+  nose.tools.eq_(db.sides(), ('l', 'r'))
+  nose.tools.eq_(db.fingers(), ('t', 'i', 'm', 'r', 'l'))
+
+  # FDV: 89 subjects * 2 fingers * 5 snapshots * 1 attempt = 890
+  # IDI: 2 subjects * 6 fingers * 2 snapshots = 48
+  # Total: 938 images
+  nose.tools.eq_(len(db.objects(protocol='central', groups='train')), 938)
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts = 1200 images
+  nose.tools.eq_(len(db.objects(protocol='central', groups='dev',
+    purposes='enroll')), 1200)
 
   # test model ids
   model_ids = db.model_ids()
@@ -124,17 +135,19 @@ def test_counts():
     purposes='probe', model_ids=model_ids[0])), 440)
 
 
-@sql3_available
+@nose.tools.nottest
+@metadata_available
 def test_driver_api():
 
   from bob.db.base.script.dbmanage import main
 
-  nose.tools.eq_(main('verafinger dumplist --self-test'.split()), 0)
-  nose.tools.eq_(main('verafinger dumplist --protocol=Full --group=dev --purpose=enroll --model=101_L_1 --self-test'.split()), 0)
-  nose.tools.eq_(main('verafinger checkfiles --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=Full --group=dev --purpose=enroll --model=101_L_1 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d checkfiles --self-test'.split()), 0)
 
 
-@sql3_available
+@nose.tools.nottest
+@metadata_available
 @db_available
 def test_load():
 
@@ -149,32 +162,8 @@ def test_load():
     nose.tools.eq_(image.dtype, numpy.uint8)
 
 
-@sql3_available
-@db_available
-def test_annotations():
-
-  db = Database()
-
-  for f in db.objects():
-
-    # loads an image from the database
-    image = f.load(DATABASE_PATH)
-
-    roi = f.roi()
-    assert isinstance(roi, numpy.ndarray)
-    nose.tools.eq_(len(roi.shape), 2) #it is a 2D array
-    nose.tools.eq_(roi.shape[1], 2) #two columns
-    nose.tools.eq_(roi.dtype, numpy.uint16)
-    assert len(roi) > 10 #at least 10 points
-
-    # ensures all annotation points are within image boundary
-    Y,X = image.shape
-    for y,x in roi:
-      assert y < Y, 'Annotation (%d, %d) for %s surpasses the image size (%d, %d)' % (y, x, f.path, Y, X)
-      assert x < X, 'Annotation (%d, %d) for %s surpasses the image size (%d, %d)' % (y, x, f.path, Y, X)
-
-
-@sql3_available
+@nose.tools.nottest
+@metadata_available
 def test_model_id_to_finger_name_conversion():
 
   db = Database()

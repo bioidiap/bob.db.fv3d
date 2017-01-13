@@ -18,4 +18,4 @@ build
 *.egg
 src/
 db.sql3
-bob/db/3dfv/data/
+bob/db/fv3d/data/

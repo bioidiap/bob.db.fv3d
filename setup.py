@@ -9,10 +9,10 @@ install_requires = load_requirements()
 
 setup(
 
-    name='bob.db.3dfv',
+    name='bob.db.fv3d',
     version=open("version.txt").read().rstrip(),
     description='3D Fingervein Database Access API for Bob',
-    url='https://gitlab.idiap.ch/bob/bob.db.3dfv',
+    url='https://gitlab.idiap.ch/bob/bob.db.fv3d',
     license='BSD',
 
     author='Andre Anjos',
@@ -30,7 +30,7 @@ setup(
 
     entry_points = {
       'bob.db': [
-        '3dfv = bob.db.3dfv.driver:Interface',
+        'fv3d = bob.db.fv3d.driver:Interface',
         ],
       },
 

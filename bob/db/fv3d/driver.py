@@ -70,7 +70,7 @@ class Interface(BaseInterface):
 
 
   def name(self):
-    return '3dfv'
+    return 'fv3d'
 
 
   def version(self):

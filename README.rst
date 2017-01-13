@@ -2,17 +2,17 @@
 .. Fri 02 Dec 2016 11:41:17 CET
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.png
-   :target: http://pythonhosted.org/bob.db.3dfv/index.html
+   :target: http://pythonhosted.org/bob.db.fv3d/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
-   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.3dfv/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.db.3dfv/badges/master/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.3dfv/commits/master
+   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.fv3d/master/index.html
+.. image:: https://gitlab.idiap.ch/bob/bob.db.fv3d/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.fv3d/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.3dfv
-.. image:: http://img.shields.io/pypi/v/bob.db.3dfv.png
-   :target: https://pypi.python.org/pypi/bob.db.3dfv
-.. image:: http://img.shields.io/pypi/dm/bob.db.3dfv.png
-   :target: https://pypi.python.org/pypi/bob.db.3dfv
+   :target: https://gitlab.idiap.ch/bob/bob.db.fv3d
+.. image:: http://img.shields.io/pypi/v/bob.db.fv3d.png
+   :target: https://pypi.python.org/pypi/bob.db.fv3d
+.. image:: http://img.shields.io/pypi/dm/bob.db.fv3d.png
+   :target: https://pypi.python.org/pypi/bob.db.fv3d
 
 
 ==========================================
