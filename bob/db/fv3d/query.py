@@ -96,7 +96,7 @@ class Database(bob.db.base.SQLiteDatabase):
 
     """
 
-    if 'train' in groups:
+    if groups and 'train' in groups:
       # there are no models in the training set
       if len(groups) == 1: return [] #only group required, so return empty
       groups = tuple(k for k in groups if k != 'train')
@@ -113,9 +113,9 @@ class Database(bob.db.base.SQLiteDatabase):
     retval = retval.filter(Protocol.name.in_(protocols))
 
     if groups:
-      filters.append(Model.group.in_(groups))
+      retval = retval.filter(Model.group.in_(groups))
 
-    retval = retval.filter(*filters).distinct().order_by('id')
+    retval = retval.distinct().order_by('id')
 
     return [k.id for k in retval]
 
@@ -243,10 +243,10 @@ class Database(bob.db.base.SQLiteDatabase):
       retval = q if retval is None else retval.union(q)
 
     if 'probe' in purposes:
-      q = self.query(File).join(Probe.file).join(Model.protocol)
+      q = self.query(File).join(Probe.file).join(Protocol)
       q = q.join(Finger).join(Client)
       q = q.filter(Probe.group.in_(groups))
-      q = q.filter(File.protocol.name.in_(protocols))
+      q = q.filter(Protocol.name.in_(protocols))
       q = q.filter(Client.gender.in_(genders))
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
