@@ -218,7 +218,7 @@ class Database(bob.db.base.SQLiteDatabase):
     # related to the training_set, models and probes related to both dev and
     # eval groups. These file lists don't overlap
 
-    retval = None
+    retval = set()
 
     if 'train' in purposes:
       q = self.query(File).join(Protocol.training_set)
@@ -228,7 +228,7 @@ class Database(bob.db.base.SQLiteDatabase):
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
       q = q.filter(File.session.in_(sessions))
-      retval = q
+      retval.update(q)
 
     if 'enroll' in purposes:
       q = self.query(File).join(Model.files)
@@ -240,7 +240,7 @@ class Database(bob.db.base.SQLiteDatabase):
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
       q = q.filter(File.session.in_(sessions))
-      retval = q if retval is None else retval.union(q)
+      retval.update(q)
 
     if 'probe' in purposes:
       q = self.query(File).join(Probe.file).join(Protocol)
@@ -251,7 +251,7 @@ class Database(bob.db.base.SQLiteDatabase):
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
       q = q.filter(File.session.in_(sessions))
-      retval = q if retval is None else retval.union(q)
+      retval.update(q)
 
     # combine all queries, sort and uniq'fy
-    return list(retval.distinct().order_by('id'))
+    return list(retval)
