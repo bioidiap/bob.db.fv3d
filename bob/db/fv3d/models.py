@@ -225,7 +225,7 @@ class File(Base, bob.db.base.File):
   @property
   def path(self):
 
-    fmt = '{session}/{attempt}/{id:03}-{age:03}-{gender}{skin}{occ}{side}{finger}{session}{attempt}{snap}{cam}'
+    fmt = '{id:03}/{session}/{attempt}/{id:03}-{age:03}-{gender}{skin}{occ}{side}{finger}{session}{attempt}{snap}{cam}'
     info = {
         'id': self.finger.client.id,
         'age': self.finger.client.age,
