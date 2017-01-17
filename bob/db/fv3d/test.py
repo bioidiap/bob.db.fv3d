@@ -12,6 +12,8 @@ from .query import Database
 import nose.tools
 from nose.plugins.skip import SkipTest
 
+DATABASE_PATH = '/idiap/project/3dfingervein/database'
+
 
 def metadata_available(test):
   """Decorator for detecting if the metadata is available"""
@@ -111,25 +113,23 @@ def test_central():
   assert len(set(train_samples+dev_enroll_samples+dev_probe_samples)) == 4538
 
 
-@nose.tools.nottest
 @metadata_available
 def test_driver_api():
 
   from bob.db.base.script.dbmanage import main
 
   nose.tools.eq_(main('fv3d dumplist --self-test'.split()), 0)
-  nose.tools.eq_(main('fv3d dumplist --protocol=Full --group=dev --purpose=enroll --model=101_L_1 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=central --group=dev --purpose=enroll --model=1 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d checkfiles --self-test'.split()), 0)
 
 
-@nose.tools.nottest
 @metadata_available
 @db_available
 def test_load():
 
   db = Database()
 
-  for f in db.objects():
+  for f in db.objects()[:5]:
 
     # loads an image from the database
     image = f.load(DATABASE_PATH)
@@ -138,12 +138,11 @@ def test_load():
     nose.tools.eq_(image.dtype, numpy.uint8)
 
 
-@nose.tools.nottest
 @metadata_available
 def test_model_id_to_finger_name_conversion():
 
   db = Database()
 
-  for f in db.objects():
+  for k in db.model_ids()[:5]:
 
-    assert len(db.finger_name_from_model_id(f.model_id)) == 5
+    assert len(db.finger_name_from_model_id(k)) == 6
