@@ -23,8 +23,9 @@ class Database(bob.db.base.SQLiteDatabase):
   and for the data itself inside the database.
   """
 
-  def __init__(self):
-    super(Database, self).__init__(SQLITE_FILE, File, None, '.png')
+  def __init__(self, original_directory=None, original_extension=None):
+    super(Database, self).__init__(SQLITE_FILE, File, original_directory,
+        original_extension)
 
 
   def protocol_names(self):
