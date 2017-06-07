@@ -263,6 +263,32 @@ class File(Base, bob.db.base.File):
     return bob.io.base.load(self.make_path(directory, extension))
 
 
+  def roi(self):
+    """Loads region-of-interest annotations for a particular image
+
+    The returned points (see return value below) correspond to a polygon in the
+    2D space delimiting the finger image. It is up to you to generate a mask
+    out of these annotations.
+
+
+    Returns:
+
+      numpy.ndarray: A 2D array of 8-bit unsigned integers corresponding to
+        annotations for the given fingervein image. Points are loaded in (y,x)
+        format so, the first column of the returned array correspond to the
+        y-values while the second column to the x-values of each coordinate.
+
+    """
+
+    # calculate where the annotations for this file are
+    directory = pkg_resources.resource_filename(__name__,
+        os.path.join('data', 'annotations', 'roi'))
+
+    # loads it w/o mercy ;-)
+    return numpy.loadtxt(self.make_path(directory, '.txt'), dtype='uint16')
+
+
+
 train_file_association = Table('train_file_association', Base.metadata,
   Column('protocol_id', Integer, ForeignKey('protocol.id')),
   Column('file_id', Integer, ForeignKey('file.id')))
