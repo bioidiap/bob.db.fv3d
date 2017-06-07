@@ -36,7 +36,7 @@ def add_clients(session, verbose):
         print("Created %s" % client)
 
 
-FILENAME_RE = re.compile(r'^(?P<id>\d{3})\-(?P<age>\d{3})\-(?P<gender>[fm])(?P<skin>[1-6x])(?P<occ>[0-9x])(?P<side>[lr])(?P<finger>[timlr])(?P<session>[1-3])(?P<attempt>[1-5])(?P<snap>[1-5])(?P<cam>[1-3])$')
+FILENAME_RE = re.compile(r'^(?P<id>\d{3})\-(?P<age>\d{3})\-(?P<gender>[fm])(?P<skin>[1-6x])(?P<occ>[0-9x])(?P<side>[lr])(?P<finger>[timlr])(?P<session>[1-3])(?P<attempt>[1-5])(?P<snap>[1-5])(?P<cam>[1-3S])$')
 
 def try_get_metadata(path):
   '''Returns the metadata from a path or ``None`` if no match occurs'''
@@ -56,7 +56,7 @@ def try_get_metadata(path):
       'session': str(int(m.group('session'))),
       'attempt': str(int(m.group('attempt'))),
       'snap': str(int(m.group('snap'))),
-      'cam': str(int(m.group('cam'))),
+      'cam': m.group('cam'),
       }
 
 
@@ -143,6 +143,8 @@ def add_protocols(session, verbose):
           model = Model(model_ref.decode(), 'dev', file_.finger, protocol)
           if verbose:
             print("Created model %s" % (model,))
+        else:
+          model = model.one()
         model.files.append(file_)
         if verbose:
           print("Added %s to %s" % (file_, model))

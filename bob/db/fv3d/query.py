@@ -104,11 +104,11 @@ class Database(bob.db.base.SQLiteDatabase):
       groups = tuple(k for k in groups if k != 'train')
 
     valid_protocols = self.protocol_names()
-    protocols = self.check_parameters_for_validity(protocol, "protocol",
-        valid_protocols)
+    protocols = bob.db.base.utils.check_parameters_for_validity(protocol,
+        "protocol", valid_protocols)
 
     valid_groups = Model.group_choices
-    groups = self.check_parameters_for_validity(groups, "group",
+    groups = bob.db.base.utils.check_parameters_for_validity(groups, "group",
         valid_groups)
 
     retval = self.query(Model).join(Protocol)
@@ -170,16 +170,18 @@ class Database(bob.db.base.SQLiteDatabase):
 
     """
 
+    import ipdb; ipdb.set_trace()
     valid_protocols = self.protocol_names()
-    protocols = self.check_parameters_for_validity(protocol, "protocol",
-        valid_protocols)
+    protocols = bob.db.base.utils.check_parameters_for_validity(protocol,
+        "protocol", valid_protocols)
 
     valid_groups = self.groups()
-    groups = self.check_parameters_for_validity(groups, "group", valid_groups)
+    groups = bob.db.base.utils.check_parameters_for_validity(groups, "group",
+        valid_groups)
 
     valid_purposes = self.purposes()
-    purposes = self.check_parameters_for_validity(purposes, "purpose",
-        valid_purposes)
+    purposes = bob.db.base.utils.check_parameters_for_validity(purposes,
+        "purpose", valid_purposes)
 
     # cleans up groups and purposes to solve for the minimum
     if ('train' in purposes and not ('train' in groups)):
@@ -198,23 +200,24 @@ class Database(bob.db.base.SQLiteDatabase):
 
     if model_ids:
       valid_model_ids = self.model_ids(protocol, groups)
-      model_ids = self.check_parameters_for_validity(model_ids, "model_ids",
-          valid_model_ids)
+      model_ids = bob.db.base.utils.check_parameters_for_validity(model_ids,
+          "model_ids", valid_model_ids)
 
     valid_genders = self.genders()
-    genders = self.check_parameters_for_validity(genders, "genders",
-        valid_genders)
+    genders = bob.db.base.utils.check_parameters_for_validity(genders,
+        "genders", valid_genders)
 
     valid_fingers = self.fingers()
-    fingers = self.check_parameters_for_validity(fingers, "fingers",
-        valid_fingers)
+    fingers = bob.db.base.utils.check_parameters_for_validity(fingers,
+        "fingers", valid_fingers)
 
     valid_sides = self.sides()
-    sides = self.check_parameters_for_validity(sides, "sides", valid_sides)
+    sides = bob.db.base.utils.check_parameters_for_validity(sides, "sides",
+        valid_sides)
 
     valid_sessions = self.sessions()
-    sessions = self.check_parameters_for_validity(sessions, "sessions",
-        valid_sessions)
+    sessions = bob.db.base.utils.check_parameters_for_validity(sessions,
+        "sessions", valid_sessions)
 
     # this database contains 3 sets of "files" for each protocol: the ones
     # related to the training_set, models and probes related to both dev and

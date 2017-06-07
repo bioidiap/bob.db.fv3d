@@ -188,7 +188,7 @@ class File(Base, bob.db.base.File):
     * session = int > 0
     * attempt = int > 0
     * snap = int > 0
-    * cam = int, one of 1, 2 or 3
+    * cam = str, one of '1', '2', '3' or 'S' ('stitched')
 
   """
 
@@ -208,7 +208,7 @@ class File(Base, bob.db.base.File):
   snapshot_choices = ('1', '2', '3', '4', '5')
   snapshot = Column(Enum(*snapshot_choices))
 
-  camera_choices = ('1', '2', '3')
+  camera_choices = ('1', '2', '3', 'S')
   camera = Column(Enum(*camera_choices))
 
   UniqueConstraint('finger_id', 'session', 'attempt', 'snapshot', 'camera')

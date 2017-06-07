@@ -41,7 +41,7 @@ Each field can have these values:
     * session = int > 0
     * attempt = int > 0
     * snap = int > 0
-    * cam = int, one of 1, 2 or 3 (1 is left, 2 is central, 3 is right)
+    * cam = int, one of 1, 2, 3 or S (1 is left, 2 is central, 3 is right and S means the "stitched" image using the three cameras)
 
 
 
@@ -64,6 +64,11 @@ the prototype (camera 2). Each finger is supposed to be considered a
   this protocol, 1 snapshot image generates one model for the subject.
 
 
+Stitched
+========
+
+The ``stitched`` protocol is the same as ``central``, but uses the stitched
+images for training and development.
 
 
 .. Place your references here
