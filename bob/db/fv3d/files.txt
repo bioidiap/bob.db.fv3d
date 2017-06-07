@@ -4,3 +4,6 @@ data/metadata.csv
 data/protocols/central/train.txt
 data/protocols/central/dev-probes.txt
 data/protocols/central/dev-models.txt
+data/protocols/stitched/train.txt
+data/protocols/stitched/dev-probes.txt
+data/protocols/stitched/dev-models.txt
