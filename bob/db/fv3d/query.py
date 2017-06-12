@@ -170,7 +170,6 @@ class Database(bob.db.base.SQLiteDatabase):
 
     """
 
-    import ipdb; ipdb.set_trace()
     valid_protocols = self.protocol_names()
     protocols = bob.db.base.utils.check_parameters_for_validity(protocol,
         "protocol", valid_protocols)
@@ -235,12 +234,16 @@ class Database(bob.db.base.SQLiteDatabase):
       q = q.filter(File.session.in_(sessions))
       retval.update(q)
 
+    # get identities for the protocol in order to simplify query
+    protocol_ids = self.query(Protocol).filter(Protocol.name.in_(protocols))
+    protocol_ids = [k.id for k in protocol_ids]
+
     if 'enroll' in purposes:
       q = self.query(File).join(Model.files)
       q = q.join(Finger).join(Client)
       q = q.filter(Model.group.in_(groups))
       if model_ids: q = q.filter(Model.id.in_(model_ids))
-      #q = q.filter(Protocol.name.in_(protocols))
+      q = q.filter(Model.protocol_id.in_(protocol_ids))
       q = q.filter(Client.gender.in_(genders))
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
@@ -248,10 +251,10 @@ class Database(bob.db.base.SQLiteDatabase):
       retval.update(q)
 
     if 'probe' in purposes:
-      q = self.query(File).join(Probe.file).join(Protocol)
+      q = self.query(File).join(Probe.file)
       q = q.join(Finger).join(Client)
       q = q.filter(Probe.group.in_(groups))
-      q = q.filter(Protocol.name.in_(protocols))
+      q = q.filter(Probe.protocol_id.in_(protocol_ids))
       q = q.filter(Client.gender.in_(genders))
       q = q.filter(Finger.side.in_(sides))
       q = q.filter(Finger.name.in_(fingers))
