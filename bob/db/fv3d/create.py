@@ -117,6 +117,7 @@ def add_protocols(session, verbose):
 
   protocol_dir = pkg_resources.resource_filename(__name__, os.path.join('data',
     'protocols'))
+
   for name in os.listdir(protocol_dir):
     protocol = Protocol(name)
     session.add(protocol)
@@ -138,7 +139,8 @@ def add_protocols(session, verbose):
       for row in f:
         filename, model_ref = row.split()
         file_ = retrieve_file(session, filename.decode())
-        model = session.query(Model).filter(Model.name==model_ref.decode())
+        model = session.query(Model).filter(Model.name==model_ref.decode(),
+            Model.protocol==protocol)
         if model.count() == 0:
           model = Model(model_ref.decode(), 'dev', file_.finger, protocol)
           if verbose:
