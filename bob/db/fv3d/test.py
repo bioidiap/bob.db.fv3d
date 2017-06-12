@@ -12,7 +12,7 @@ from .query import Database
 import nose.tools
 from nose.plugins.skip import SkipTest
 
-DATABASE_PATH = '/idiap/project/3dfingervein/database'
+DATABASE_PATH = '/idiap/project/3dfingervein/database+stitched'
 
 
 def metadata_available(test):
@@ -65,8 +65,9 @@ def test_basic_queries():
   db = Database()
 
   protocols = db.protocol_names()
-  nose.tools.eq_(len(protocols), 1)
+  nose.tools.eq_(len(protocols), 2)
   assert 'central' in protocols
+  assert 'stitched' in protocols
 
   nose.tools.eq_(db.groups(), ('train', 'dev', 'eval'))
   nose.tools.eq_(db.purposes(), ('train', 'enroll', 'probe'))
@@ -114,12 +115,51 @@ def test_central():
 
 
 @metadata_available
+def test_stitched():
+
+  # test whether the correct number of clients is returned
+  db = Database()
+
+  # FDV: 89 subjects * 2 fingers * 5 snapshots * 1 attempt = 890
+  # IDI: 2 subjects * 6 fingers * 2 snapshots = 48
+  # Total: 938 images
+  train_samples = db.objects(protocol='stitched', groups='train')
+  nose.tools.eq_(len(train_samples), 938)
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts = 1200 images
+  dev_enroll_samples = db.objects(protocol='stitched', groups='dev',
+      purposes='enroll')
+  nose.tools.eq_(len(dev_enroll_samples), 1200)
+  model_ids = db.model_ids(protocol='stitched')
+  nose.tools.eq_(len(dev_enroll_samples), len(model_ids))
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts * 2 sessions
+  # = 2400 images
+  dev_probe_samples = db.objects(protocol='stitched', groups='dev',
+      purposes='probe')
+  nose.tools.eq_(len(dev_probe_samples), 2400)
+
+  # filtering by model ids on probes, returns all
+  nose.tools.eq_(len(db.objects(protocol='stitched', groups='dev',
+    purposes='probe', model_ids = model_ids[0])), 2400)
+
+  # 1 image per model
+  # tests that we can filter by model ids
+  nose.tools.eq_(len(db.objects(protocol='stitched', groups='dev',
+    purposes='enroll', model_ids=model_ids[:10])), 10)
+
+  # check file ids for train, dev enroll and dev probe are exclusive
+  assert len(set(train_samples+dev_enroll_samples+dev_probe_samples)) == 4538
+
+
+@metadata_available
 def test_driver_api():
 
   from bob.db.base.script.dbmanage import main
 
   nose.tools.eq_(main('fv3d dumplist --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d dumplist --protocol=central --group=dev --purpose=enroll --model=1 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=stitched --group=dev --purpose=enroll --model=1201 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d checkfiles --self-test'.split()), 0)
 
 
