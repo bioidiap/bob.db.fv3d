@@ -65,8 +65,10 @@ def test_basic_queries():
   db = Database()
 
   protocols = db.protocol_names()
-  nose.tools.eq_(len(protocols), 2)
+  nose.tools.eq_(len(protocols), 4)
+  assert 'left' in protocols
   assert 'central' in protocols
+  assert 'right' in protocols
   assert 'stitched' in protocols
 
   nose.tools.eq_(db.groups(), ('train', 'dev', 'eval'))
@@ -74,6 +76,44 @@ def test_basic_queries():
   nose.tools.eq_(db.genders(), ('m', 'f'))
   nose.tools.eq_(db.sides(), ('l', 'r'))
   nose.tools.eq_(db.fingers(), ('t', 'i', 'm', 'r', 'l'))
+
+
+@metadata_available
+def test_left():
+
+  # test whether the correct number of clients is returned
+  db = Database()
+
+  # FDV: 89 subjects * 2 fingers * 5 snapshots * 1 attempt = 890
+  # IDI: 2 subjects * 6 fingers * 2 snapshots = 48
+  # Total: 938 images
+  train_samples = db.objects(protocol='left', groups='train')
+  nose.tools.eq_(len(train_samples), 938)
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts = 1200 images
+  dev_enroll_samples = db.objects(protocol='left', groups='dev',
+      purposes='enroll')
+  nose.tools.eq_(len(dev_enroll_samples), 1200)
+  model_ids = db.model_ids(protocol='left')
+  nose.tools.eq_(len(dev_enroll_samples), len(model_ids))
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts * 2 sessions
+  # = 2400 images
+  dev_probe_samples = db.objects(protocol='left', groups='dev',
+      purposes='probe')
+  nose.tools.eq_(len(dev_probe_samples), 2400)
+
+  # filtering by model ids on probes, returns all
+  nose.tools.eq_(len(db.objects(protocol='left', groups='dev',
+    purposes='probe', model_ids = model_ids[0])), 2400)
+
+  # 1 image per model
+  # tests that we can filter by model ids
+  nose.tools.eq_(len(db.objects(protocol='left', groups='dev',
+    purposes='enroll', model_ids=model_ids[:10])), 10)
+
+  # check file ids for train, dev enroll and dev probe are exclusive
+  assert len(set(train_samples+dev_enroll_samples+dev_probe_samples)) == 4538
 
 
 @metadata_available
@@ -108,6 +148,44 @@ def test_central():
   # 1 image per model
   # tests that we can filter by model ids
   nose.tools.eq_(len(db.objects(protocol='central', groups='dev',
+    purposes='enroll', model_ids=model_ids[:10])), 10)
+
+  # check file ids for train, dev enroll and dev probe are exclusive
+  assert len(set(train_samples+dev_enroll_samples+dev_probe_samples)) == 4538
+
+
+@metadata_available
+def test_right():
+
+  # test whether the correct number of clients is returned
+  db = Database()
+
+  # FDV: 89 subjects * 2 fingers * 5 snapshots * 1 attempt = 890
+  # IDI: 2 subjects * 6 fingers * 2 snapshots = 48
+  # Total: 938 images
+  train_samples = db.objects(protocol='right', groups='train')
+  nose.tools.eq_(len(train_samples), 938)
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts = 1200 images
+  dev_enroll_samples = db.objects(protocol='right', groups='dev',
+      purposes='enroll')
+  nose.tools.eq_(len(dev_enroll_samples), 1200)
+  model_ids = db.model_ids(protocol='right')
+  nose.tools.eq_(len(dev_enroll_samples), len(model_ids))
+
+  # IDI: 50 subjects * 6 fingers * 2 snapshots * 2 attempts * 2 sessions
+  # = 2400 images
+  dev_probe_samples = db.objects(protocol='right', groups='dev',
+      purposes='probe')
+  nose.tools.eq_(len(dev_probe_samples), 2400)
+
+  # filtering by model ids on probes, returns all
+  nose.tools.eq_(len(db.objects(protocol='right', groups='dev',
+    purposes='probe', model_ids = model_ids[0])), 2400)
+
+  # 1 image per model
+  # tests that we can filter by model ids
+  nose.tools.eq_(len(db.objects(protocol='right', groups='dev',
     purposes='enroll', model_ids=model_ids[:10])), 10)
 
   # check file ids for train, dev enroll and dev probe are exclusive
@@ -158,7 +236,9 @@ def test_driver_api():
   from bob.db.base.script.dbmanage import main
 
   nose.tools.eq_(main('fv3d dumplist --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=left --group=dev --purpose=enroll --model=2401 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d dumplist --protocol=central --group=dev --purpose=enroll --model=1 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=right --group=dev --purpose=enroll --model=3601 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d dumplist --protocol=stitched --group=dev --purpose=enroll --model=1201 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d checkfiles --self-test'.split()), 0)
 

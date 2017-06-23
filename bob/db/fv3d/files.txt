@@ -1,9 +1,15 @@
 db.sql3
 data/files.txt
 data/metadata.csv
+data/protocols/left/train.txt
+data/protocols/left/dev-probes.txt
+data/protocols/left/dev-models.txt
 data/protocols/central/train.txt
 data/protocols/central/dev-probes.txt
 data/protocols/central/dev-models.txt
+data/protocols/right/train.txt
+data/protocols/right/dev-probes.txt
+data/protocols/right/dev-models.txt
 data/protocols/stitched/train.txt
 data/protocols/stitched/dev-probes.txt
 data/protocols/stitched/dev-models.txt
