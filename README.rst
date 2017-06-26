@@ -41,6 +41,6 @@ development `mailing list`_.
 
 .. Place your references here:
 .. _bob: https://www.idiap.ch/software/bob
-.. _installation: https://gitlab.idiap.ch/bob/bob/wikis/Installation
-.. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/bob-devel
+.. _installation: https://www.idiap.ch/software/bob/install
+.. _mailing list: https://www.idiap.ch/software/bob/discuss
 .. _3d fingervein database: https://www.idiap.ch/dataset/3d-fingervein
