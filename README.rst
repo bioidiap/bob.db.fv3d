@@ -1,17 +1,15 @@
 .. vim: set fileencoding=utf-8 :
-.. Fri 02 Dec 2016 11:41:17 CET
+.. Mon 26 Jun 2017 11:30:21 CEST
 
-.. image:: http://img.shields.io/badge/docs-stable-yellow.png
-   :target: http://pythonhosted.org/bob.db.fv3d/index.html
-.. image:: http://img.shields.io/badge/docs-latest-orange.png
-   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.fv3d/master/index.html
+.. image:: http://img.shields.io/badge/docs-stable-yellow.svg
+   :target: http://www.idiap.ch/software/bob/docs/bob/bob.db.fv3d/stable/index.html
+.. image:: http://img.shields.io/badge/docs-latest-orange.svg
+   :target: http://beatubulatest.lab.idiap.ch/private/docs/bob/bob.db.fv3d/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.fv3d/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.fv3d/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.fv3d
-.. image:: http://img.shields.io/pypi/v/bob.db.fv3d.png
-   :target: https://pypi.python.org/pypi/bob.db.fv3d
-.. image:: http://img.shields.io/pypi/dm/bob.db.fv3d.png
+.. image:: http://img.shields.io/pypi/v/bob.db.fv3d.svg
    :target: https://pypi.python.org/pypi/bob.db.fv3d
 
 
@@ -28,11 +26,10 @@ from this dataset, which need to be obtained through the link above.
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, using the Python interpreter
-provided by the distribution, bootstrap and buildout this package::
+Complete Bob's `installation`_ instructions. Then, to install this package,
+run::
 
-  $ python bootstrap-buildout.py
-  $ ./bin/buildout
+  $ conda install bob.db.fv3d
 
 
 Contact
