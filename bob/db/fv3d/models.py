@@ -263,6 +263,23 @@ class File(Base, bob.db.base.File):
     return bob.io.base.load(self.make_path(directory, extension))
 
 
+  def has_roi(self):
+    """Tells if the RoI for a sample is available
+
+
+    Returns:
+
+      bool: ``True`` if this sample has an RoI
+
+    """
+
+    # calculate where the annotations for this file are
+    directory = pkg_resources.resource_filename(__name__,
+        os.path.join('data', 'annotations', 'roi'))
+
+    return os.path.exists(self.make_path(directory, '.txt'))
+
+
   def roi(self):
     """Loads region-of-interest annotations for a particular image
 
