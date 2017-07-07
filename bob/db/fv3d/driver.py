@@ -81,8 +81,9 @@ class Interface(BaseInterface):
   def files(self):
     basedir = pkg_resources.resource_filename(__name__, '')
     filelist = os.path.join(basedir, 'files.txt')
-    return [os.path.join(basedir, k.strip()) for k in \
-        open(filelist, 'rt').readlines() if k.strip()]
+    with open(filelist, 'rt') as f:
+      return [os.path.join(basedir, k.strip()) for k in \
+          f.readlines() if k.strip()]
 
 
   def type(self):
