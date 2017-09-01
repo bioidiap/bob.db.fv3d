@@ -262,4 +262,4 @@ class Database(bob.db.base.SQLiteDatabase):
       retval.update(q)
 
     # combine all queries, sort and uniq'fy
-    return list(retval)
+    return sorted(retval, key=lambda x: x.path)
