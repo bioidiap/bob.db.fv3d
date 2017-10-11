@@ -74,7 +74,6 @@ class Interface(BaseInterface):
 
 
   def version(self):
-    import pkg_resources  # part of setuptools
     return pkg_resources.require('bob.db.%s' % self.name())[0].version
 
 
