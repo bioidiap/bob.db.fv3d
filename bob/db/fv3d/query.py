@@ -119,7 +119,7 @@ class Database(bob.db.base.SQLiteDatabase):
 
     retval = retval.distinct().order_by('id')
 
-    return [k.id for k in retval]
+    return [k.name for k in retval]
 
 
   def _train_objects(self, protocols, genders, sides, fingers, sessions):
