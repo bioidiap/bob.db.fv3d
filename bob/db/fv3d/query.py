@@ -73,7 +73,7 @@ class Database(bob.db.base.SQLiteDatabase):
   def finger_name_from_model_id(self, model_id):
     """Returns the unique finger name in the database given a ``model_id``"""
 
-    model = self.query(Model).filter(Model.id==model_id).one()
+    model = self.query(Model).filter(Model.name==model_id).first()
     return model.finger.unique_name
 
 
@@ -242,7 +242,7 @@ class Database(bob.db.base.SQLiteDatabase):
       q = self.query(File).join(Model.files)
       q = q.join(Finger).join(Client)
       q = q.filter(Model.group.in_(groups))
-      if model_ids: q = q.filter(Model.id.in_(model_ids))
+      if model_ids: q = q.filter(Model.name.in_(model_ids))
       q = q.filter(Model.protocol_id.in_(protocol_ids))
       q = q.filter(Client.gender.in_(genders))
       q = q.filter(Finger.side.in_(sides))

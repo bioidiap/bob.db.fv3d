@@ -236,10 +236,10 @@ def test_driver_api():
   from bob.db.base.script.dbmanage import main
 
   nose.tools.eq_(main('fv3d dumplist --self-test'.split()), 0)
-  nose.tools.eq_(main('fv3d dumplist --protocol=left --group=dev --purpose=enroll --model=2401 --self-test'.split()), 0)
-  nose.tools.eq_(main('fv3d dumplist --protocol=central --group=dev --purpose=enroll --model=1 --self-test'.split()), 0)
-  nose.tools.eq_(main('fv3d dumplist --protocol=right --group=dev --purpose=enroll --model=3601 --self-test'.split()), 0)
-  nose.tools.eq_(main('fv3d dumplist --protocol=stitched --group=dev --purpose=enroll --model=1201 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=left --group=dev --purpose=enroll --model=110-rm-12 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=central --group=dev --purpose=enroll --model=101-lm-12 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=right --group=dev --purpose=enroll --model=149-lr-21 --self-test'.split()), 0)
+  nose.tools.eq_(main('fv3d dumplist --protocol=stitched --group=dev --purpose=enroll --model=153-rr-22 --self-test'.split()), 0)
   nose.tools.eq_(main('fv3d checkfiles --self-test'.split()), 0)
 
 
